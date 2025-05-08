@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <title>Angular Signal Graph Visualizer</title>
@@ -9,11 +10,13 @@
       font-family: sans-serif;
       margin: 20px;
     }
+
     textarea {
       width: 100%;
       height: 200px;
       margin-bottom: 10px;
     }
+
     #graphContainer {
       border: 1px solid #ccc;
       width: 100%;
@@ -22,21 +25,25 @@
       overflow: hidden;
       position: relative;
     }
+
     svg {
       width: 100%;
       height: 100%;
       cursor: grab;
     }
+
     .node text {
       font-size: 12px;
       pointer-events: none;
     }
+
     .link {
       fill: none;
       stroke: #999;
       stroke-width: 1.5px;
       marker-end: url(#arrow);
     }
+
     #nodeInfo {
       margin-top: 20px;
       padding: 10px;
@@ -47,6 +54,7 @@
     }
   </style>
 </head>
+
 <body>
   <h1>Signal Graph Visualizer</h1>
   <textarea id="jsonInput" placeholder="JSON hier eingeben..."></textarea>
@@ -181,7 +189,7 @@
           .on("drag", dragged)
           .on("end", dragended));
 
-      node.each(function(d) {
+      node.each(function (d) {
         const group = d3.select(this);
         const kindText = d.kind || "";
         const radius = Math.max(20, kindText.length * 4.5 + 10);
@@ -206,11 +214,19 @@
 
       simulation.on("tick", () => {
         link.attr("d", d => {
-          const dx = d.target.x - d.source.x;
-          const dy = d.target.y - d.source.y;
-          const dr = Math.sqrt(dx * dx + dy * dy) + Math.abs(d.curveOffset);
-          const curve = d.curveOffset >= 0 ? 1 : 0;
-          return `M${d.source.x},${d.source.y}A${dr},${dr} 0 0,${curve} ${d.target.x},${d.target.y}`;
+          const sx = d.source.x, sy = d.source.y;
+          const tx = d.target.x, ty = d.target.y;
+
+          if (!d.curveOffset || d.curveOffset === 0) {
+            // Gerade Linie bei einfacher Verbindung
+            return `M${sx},${sy}L${tx},${ty}`;
+          }
+
+          const dx = tx - sx;
+          const dy = ty - sy;
+          const dr = Math.sqrt(dx * dx + dy * dy);
+          const curve = d.curveOffset > 0 ? 1 : 0;
+          return `M${sx},${sy}A${dr + Math.abs(d.curveOffset)},${dr + Math.abs(d.curveOffset)} 0 0,${curve} ${tx},${ty}`;
         });
 
         node.attr("transform", d => `translate(${d.x},${d.y})`);
@@ -263,4 +279,5 @@
     });
   </script>
 </body>
+
 </html>
