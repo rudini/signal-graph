@@ -238,15 +238,14 @@
 
       node.each(function (d) {
         const group = d3.select(this);
-        const kindText = d.kind || "";
-        const radius = Math.max(20, kindText.length * 4.5 + 10);
+        const radius = 40; // Einheitlicher Radius
 
         group.append("circle")
           .attr("r", radius)
           .attr("fill", getKindColor(d.kind));
 
         group.append("text")
-          .text(kindText)
+          .text(d.kind || "")
           .attr("text-anchor", "middle")
           .attr("dy", 4)
           .attr("fill", "#000")
@@ -255,8 +254,9 @@
         group.append("text")
           .text(d.label)
           .attr("dy", 4)
-          .attr("x", radius + 5)
-          .attr("fill", "#333");
+          .attr("x", radius + 10) // immer gleich weit vom Kreiszentrum entfernt
+          .attr("fill", "#333")
+          .attr("text-anchor", "start");
       });
 
       simulation.on("tick", () => {
